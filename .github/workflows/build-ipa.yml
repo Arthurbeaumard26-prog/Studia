@@ -23,7 +23,8 @@ jobs:
             -target Studia \
             -configuration Release \
             -sdk iphoneos \
-            -derivedDataPath build \
+            SYMROOT="$PWD/build" \
+            OBJROOT="$PWD/build/intermediate" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
@@ -32,8 +33,12 @@ jobs:
 
       - name: Empaqueter en .ipa
         run: |
-          APP="build/Build/Products/Release-iphoneos/Studia.app"
-          test -d "$APP" || (echo "App introuvable: $APP" && ls build/Build/Products/Release-iphoneos && exit 1)
+          APP="build/Release-iphoneos/Studia.app"
+          if [ ! -d "$APP" ]; then
+            echo "App introuvable, contenu de build:"
+            find build -maxdepth 3 -name "*.app" -o -maxdepth 2 -type d | head -40
+            exit 1
+          fi
           mkdir -p Payload
           cp -R "$APP" Payload/
           zip -qry Studia-unsigned.ipa Payload
