@@ -23,21 +23,21 @@ jobs:
             -target Studia \
             -configuration Release \
             -sdk iphoneos \
-            SYMROOT="$PWD/out" \
-            OBJROOT="$PWD/out/intermediate" \
+            SYMROOT="$RUNNER_TEMP/out" \
+            OBJROOT="$RUNNER_TEMP/out/intermediate" \
             ASSETCATALOG_COMPILER_GENERATE_ASSET_SYMBOLS=NO \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
             DEVELOPMENT_TEAM="" \
-            clean build
+            build
 
       - name: Empaqueter en .ipa
         run: |
-          APP="out/Release-iphoneos/Studia.app"
+          APP="$RUNNER_TEMP/out/Release-iphoneos/Studia.app"
           if [ ! -d "$APP" ]; then
             echo "App introuvable, contenu de build:"
-            find out -maxdepth 3 -name "*.app" -o -maxdepth 2 -type d | head -40
+            find "$RUNNER_TEMP/out" -maxdepth 3 -name "*.app" -o -maxdepth 2 -type d | head -40
             exit 1
           fi
           mkdir -p Payload
