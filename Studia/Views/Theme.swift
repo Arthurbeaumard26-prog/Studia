@@ -17,6 +17,9 @@ enum Theme {
 }
 
 extension Color {
+    /// Permet Color(Theme.accent) sur iOS 16 : l'API SwiftUI équivalente exige iOS 17.
+    init(_ color: Color) { self = color }
+
     init(hex: UInt32) {
         self.init(
             .sRGB,

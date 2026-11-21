@@ -1,0 +1,52 @@
+name: Build IPA
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-15
+    steps:
+      - name: Récupérer le code
+        uses: actions/checkout@v4
+
+      - name: Version de Xcode
+        run: xcodebuild -version
+
+      - name: Compiler l'app sans signature
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -project Studia.xcodeproj \
+            -target Studia \
+            -configuration Release \
+            -sdk iphoneos \
+            SYMROOT="$PWD/out" \
+            OBJROOT="$PWD/out/intermediate" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            DEVELOPMENT_TEAM="" \
+            clean build
+
+      - name: Empaqueter en .ipa
+        run: |
+          APP="out/Release-iphoneos/Studia.app"
+          if [ ! -d "$APP" ]; then
+            echo "App introuvable, contenu de build:"
+            find out -maxdepth 3 -name "*.app" -o -maxdepth 2 -type d | head -40
+            exit 1
+          fi
+          mkdir -p Payload
+          cp -R "$APP" Payload/
+          zip -qry Studia-unsigned.ipa Payload
+          ls -lh Studia-unsigned.ipa
+
+      - name: Publier l'ipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: Studia-ipa
+          path: Studia-unsigned.ipa
+          retention-days: 30

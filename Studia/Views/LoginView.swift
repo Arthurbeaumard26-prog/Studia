@@ -66,6 +66,11 @@ struct PronoteWebView: UIViewRepresentable {
 
     final class Coordinator: NSObject, WKNavigationDelegate {
         var onSessionReady: ((WKHTTPCookieStore) -> Void)?
+
+        init(onSessionReady: @escaping (WKHTTPCookieStore) -> Void) {
+            self.onSessionReady = onSessionReady
+            super.init()
+        }
         weak var webView: WKWebView?
         private var detected = false
 

@@ -102,7 +102,7 @@ final class HTMLNode {
         return out
     }
 
-    func tables() -> [[HTMLNode]] {
+    func tables() -> [HTMLNode] {
         descendants { $0.tag == "tr" }
     }
 }
